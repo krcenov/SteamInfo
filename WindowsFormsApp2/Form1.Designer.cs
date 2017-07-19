@@ -312,7 +312,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(172, 13);
             this.label8.TabIndex = 21;
-            this.label8.Text = "Created by krcenov on 12.07.2017";
+            this.label8.Text = "Created by krcenov on 19.07.2017";
             // 
             // label9
             // 

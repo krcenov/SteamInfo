@@ -13,7 +13,9 @@ namespace WindowsFormsApp2
 {
     public partial class MainForm : Form
     {
+        public int Gamecount;
         public string Raw;
+        public string Processed1;
         public string KEY = "A2CEC00C2471A0F4E3796F3C42BC0396"; //This is your private STEAMAPI KEY only compile with it, Dont give it away https://steamcommunity.com/dev/apikey 
 
         public MainForm()
@@ -38,33 +40,46 @@ namespace WindowsFormsApp2
                     DialogResult Ok = MessageBox.Show("You have typed an incorrect SteamID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     goto EndofGetOwnedSteamGames;
                 }
-                string Processed1 = GetGoodString(Raw).Replace("\"response\"", "").Replace("\"gamecount\"", "");
-                string cleanString = Processed1.Replace("appid", "");
-                Processed1 = cleanString.Replace("playtimeforever", "#");
-                cleanString = "\"" + Processed1 + "\"";
                 try
                 {
-                    cleanString = cleanString.Substring(cleanString.IndexOf("\"games\"") + 7);
+                    Gamecount = Regex.Matches(Regex.Escape(Raw), "appid").Count;
                 }
                 catch (Exception)
                 {
                     MessageBox.Show("Can not process SteamID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     goto EndofGetOwnedSteamGames;
+                    throw;
                 }
-                cleanString = cleanString.Substring(cleanString.IndexOf("\"games\"") + 7);
-                int g = Regex.Matches(Regex.Escape(cleanString), "\"\"").Count;
-                List<int> ListOwnedSteamGames = new List<int>();
-                for (int i = 1; i < g + 1; i++)
+                List<int> gameid = new List<int>();
+                for (int i = 0; i < Gamecount; i++)
                 {
-                    string A = ExtractString(cleanString);
-                    ListOwnedSteamGames.Add(int.Parse(A));
-                    cleanString = cleanString.Replace("\"" + A + "\"", "");
+                    Regex regex = new Regex("d\": (.*?),");
+                    var v = regex.Match(Raw);
+                    string s = v.Groups[1].ToString();
+                    Raw = Regex.Replace(Raw, "d\": " + s + ",", "");
+                    //s.Substring(4, s.Length - 4);
+                    if (s != "")
+                    {
+                        gameid.Add(int.Parse(s));
+                    }
                 }
-                ListOwnedSteamGames.Sort();
-                AddtoLBoxOG(ListOwnedSteamGames, Name);
+                gameid.Sort();
+                AddtoLBoxOG(gameid, Name);
             EndofGetOwnedSteamGames:;
             }
         }              //Getting Steam Owned Games
+        public int CountOfOwnedGames(string SteamID)
+        {
+            using (WebClient client = new WebClient())
+            {
+
+                Raw = client.DownloadString("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + KEY + "&steamid=" + SteamID + "&format=json");
+            }
+            int Count = Regex.Matches(Regex.Escape(Raw), "appid").Count;
+
+            return Count;
+                
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -146,10 +161,8 @@ namespace WindowsFormsApp2
             }
             else
             {
-                
                 GetOwnedSteamGames(CustomSteamIDBox.Text, OwnedGamesCustomSteamIDLB);
-                string CountOwnedGamesCustomID = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
-                CountOwnedGamesCID.Text = CountOwnedGamesCustomID;
+                CountOwnedGamesCID.Text = CountOfOwnedGames(CustomSteamIDBox.Text).ToString();
             }
             
         }
@@ -163,29 +176,6 @@ namespace WindowsFormsApp2
                 ListOwnedGamesName.Items.Add(o);
             }
         }      //Adding items to listbox
-
-        private string GetGoodString(string input)
-        {
-            var allowedChars =
-               
-               Enumerable.Range('0', 10).Concat(
-               Enumerable.Range('A', 26)).Concat(
-               Enumerable.Range('a', 26)).Concat(
-               Enumerable.Range('!', 3));
-
-            var goodChars = input.Where(c => allowedChars.Contains(c));
-            return new string(goodChars.ToArray());
-        }                                  //Processing String from http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001
-
-
-        string ExtractString(string s)
-        {
-            var startTag = "\"\"";
-            int startIndex = s.IndexOf(startTag) + startTag.Length;
-            int endIndex = s.IndexOf("\"", startIndex);
-            return s.Substring(startIndex, endIndex - startIndex);
-        }                                              //Processing again
-
         private void CustomSteamIDBox_Keypress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
