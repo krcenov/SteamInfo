@@ -20,7 +20,7 @@ namespace WindowsFormsApp2
         public int Gamecount;
         public string Raw;
         public string Processed1;
-        public string KEY = "A2CEC00C2471A0F4E3796F3C42BC0396"; //This is your private STEAMAPI KEY only compile with it, Dont give it away https://steamcommunity.com/dev/apikey 
+        public string KEY = ""; //This is your private STEAMAPI KEY only compile with it, Dont give it away https://steamcommunity.com/dev/apikey 
 
         public MainForm()
         {
