@@ -8,15 +8,19 @@ using Steamworks;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.IO;
+using System.Text;
+using System.Data;
 
 namespace WindowsFormsApp2
 {
     public partial class MainForm : Form
     {
+        public string steamid = "";
         public int Gamecount;
         public string Raw;
         public string Processed1;
-        public string KEY = ""; //This is your private STEAMAPI KEY only compile with it, Dont give it away https://steamcommunity.com/dev/apikey 
+        public string KEY = "A2CEC00C2471A0F4E3796F3C42BC0396"; //This is your private STEAMAPI KEY only compile with it, Dont give it away https://steamcommunity.com/dev/apikey 
 
         public MainForm()
         {
@@ -64,7 +68,7 @@ namespace WindowsFormsApp2
                     }
                 }
                 gameid.Sort();
-                AddtoLBoxOG(gameid, Name);
+                AddtoLBox(gameid, Name);
             EndofGetOwnedSteamGames:;
             }
         }              //Getting Steam Owned Games
@@ -117,13 +121,13 @@ namespace WindowsFormsApp2
             {
                 //Start of Initialization shit
                 SteamAPI.Init();  //Must initialise SteamApi before using steamwork functions
+                steamid = SteamUser.GetSteamID().ToString();
                 string name = SteamFriends.GetPersonaName();
                 string steamlevel = SteamUser.GetPlayerSteamLevel().ToString();
                 int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
                 SteamFriendCountBox.Text = friendCount.ToString();
                 SteamNameBox.Text = name;
                 SteamLevelBox.Text = steamlevel;
-                string steamid = SteamUser.GetSteamID().ToString();
                 SteamIDBox.Text = steamid;
                 GetOwnedSteamGames(steamid, OwnedGamesLBox);
                 OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
@@ -151,25 +155,30 @@ namespace WindowsFormsApp2
             {
                 OwnedGamesCustomSteamIDLB.Items.Clear();
             }
-            else
-            {
-
-            }
             if (CustomSteamIDBox.Text == "")
             {
                 DialogResult Ok = MessageBox.Show("You need to type in a SteamID in the box before trying to fetch owned steam games list!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                GetOwnedSteamGames(CustomSteamIDBox.Text, OwnedGamesCustomSteamIDLB);
-                CountOwnedGamesCID.Text = CountOfOwnedGames(CustomSteamIDBox.Text).ToString();
+                if (FilterFreeGamesCHB.Checked)
+                {
+                    OwnedSteamGamesFilteredNoFreeGames(OwnedGamesCustomSteamIDLB, CustomSteamIDBox.Text);
+                    CountOwnedGamesCID.Text = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
+                    
+                }
+                else
+                {
+                    GetOwnedSteamGames(CustomSteamIDBox.Text, OwnedGamesCustomSteamIDLB);
+                    CountOwnedGamesCID.Text = CountOfOwnedGames(CustomSteamIDBox.Text).ToString();
+                }
             }
             
         }
 
         
 
-        public void AddtoLBoxOG(IEnumerable items, ListBox ListOwnedGamesName)
+        public void AddtoLBox(IEnumerable items, ListBox ListOwnedGamesName)
         {
             foreach (object o in items)
             {
@@ -205,5 +214,146 @@ namespace WindowsFormsApp2
             OwnedGamesCustomSteamIDLB.Visible = false;
             this.Size = new Size(370, 250);
         }           //RB For Own SteamID Check
+
+        public static List<int> GetOwnedSteamGames(string KEY, string SteamID)
+        {
+            
+            string Raw;
+            int Gamecount;
+            List<int> gameid = new List<int>();
+            using (WebClient client = new WebClient())
+            {
+                
+                try
+                {
+                    Raw = client.DownloadString("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + KEY + "&steamid=" + SteamID + "&format=json");
+                    Gamecount = Regex.Matches(Regex.Escape(Raw), "appid").Count;
+                    for (int i = 0; i < Gamecount; i++)
+                    {
+                        Regex regex = new Regex("d\": (.*?),");
+                        var v = regex.Match(Raw);
+                        string s = v.Groups[1].ToString();
+                        Raw = Regex.Replace(Raw, "d\": " + s + ",", "");
+
+                        if (s != "")
+                        {
+                            gameid.Add(int.Parse(s));
+                        }
+                    }
+                    gameid.Sort();
+                }
+                catch (Exception)
+                {
+                    DialogResult Ok = MessageBox.Show("An Error Occured!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return gameid;
+        }
+        public void OwnedSteamGamesFilteredNoFreeGames(ListBox name, string STEAMID)
+        {
+            string RawSteamdbinfodatahtmlcode;
+
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://steamdb.info/tags/?tagid=113");
+            request.UserAgent = "wowoww";
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                name.Items.Clear();
+                Stream receiveStream = response.GetResponseStream();
+                StreamReader readStream = null;
+
+                if (response.CharacterSet == null)
+                {
+                    readStream = new StreamReader(receiveStream);
+                }
+                else
+                {
+                    readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+                }
+
+                RawSteamdbinfodatahtmlcode = readStream.ReadToEnd();
+                response.Close();
+                readStream.Close();
+                int count = Regex.Matches(Regex.Escape(RawSteamdbinfodatahtmlcode), "/app/").Count;
+
+                //string path = "RawSteamdbInfoDataHtmlCode.html";
+                //TextWriter tw = new StreamWriter(path, true);                 FOR DEBUG PURPOSES
+                //tw.WriteLine(RawSteamdbinfodatahtmlcode);
+
+                List<int> gameid = new List<int>();
+                for (int i = 0; i < count; i++)
+                {
+                    Regex regex = new Regex("data-appid=\"(.*?)\">");
+                    var v = regex.Match(RawSteamdbinfodatahtmlcode);
+                    string s = v.Groups[1].ToString();
+                    RawSteamdbinfodatahtmlcode = Regex.Replace(RawSteamdbinfodatahtmlcode, "data-appid=\"" + s + "\">", "");
+                    if (s != "")
+                    {
+                        gameid.Add(int.Parse(s));
+                    }
+                }
+                gameid.Sort();
+                List<int> CopyOwnedSGames = new List<int>(GetOwnedSteamGames(KEY, STEAMID));
+                for (int i = 0; i < gameid.Count; i++)
+                {
+                    for (int g = 0; g < CopyOwnedSGames.Count; g++)
+                    {
+                        if (CopyOwnedSGames[g] == gameid[i])
+                        {
+                            CopyOwnedSGames[g] = 0;
+                        }
+                    }
+                }
+                for (int i = 0; i < CopyOwnedSGames.Count; i++)
+                {
+                    if (CopyOwnedSGames[i] != 0)
+                    {
+                        name.Items.Add(CopyOwnedSGames[i]);
+                    }
+                }
+            }
+        }
+        private void FilterFreeGamesCHB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FilterFreeGamesCHB.Checked)
+            {
+                if (OwnedGamesCustomSteamIDLB.Items.Count != 0)
+                {
+                    OwnedSteamGamesFilteredNoFreeGames(OwnedGamesCustomSteamIDLB, CustomSteamIDBox.Text);
+                    CountOwnedGamesCID.Text = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
+                }
+                FilterFreeGamesCHB.Enabled = false;
+                OwnedSteamGamesFilteredNoFreeGames(OwnedGamesLBox, steamid);
+                OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString(); // For updating the GameCount in owned games
+                FilterFreeGamesCHB.Enabled = true;
+            }
+            else
+            {
+                if (OwnedGamesCustomSteamIDLB.Items.Count != 0)
+                {
+                    OwnedGamesCustomSteamIDLB.Items.Clear();
+                    GetOwnedSteamGames(CustomSteamIDBox.Text, OwnedGamesCustomSteamIDLB);
+                    CountOwnedGamesCID.Text = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
+                }
+                FilterFreeGamesCHB.Enabled = false;
+                OwnedGamesLBox.Items.Clear();
+                GetOwnedSteamGames(steamid, OwnedGamesLBox);
+                OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString(); // For updating the GameCount in owned games
+                FilterFreeGamesCHB.Enabled = true;
+            }
+        }
+
+        private void OwnedGamesCustomSteamIDLB_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetText(OwnedGamesCustomSteamIDLB.SelectedItem.ToString());
+            MessageBox.Show("Copied " + OwnedGamesCustomSteamIDLB.SelectedItem.ToString() + " to clipboard!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void OwnedGamesLBox_DoubleClick(object sender, EventArgs e)
+        {
+            Clipboard.SetText(OwnedGamesLBox.SelectedItem.ToString());
+            MessageBox.Show("Copied " + OwnedGamesLBox.SelectedItem.ToString() + " to clipboard!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 }

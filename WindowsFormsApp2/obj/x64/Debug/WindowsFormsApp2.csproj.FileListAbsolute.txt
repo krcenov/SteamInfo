@@ -1,15 +1,14 @@
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\Steamworks.NET.dll
 C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csprojResolveAssemblyReference.cache
 C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.MainForm.resources
 C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.Properties.Resources.resources
 C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.GenerateResource.Cache
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo by krcenov.exe.config
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo by krcenov.exe.manifest
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo by krcenov.application
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo by krcenov.exe
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo by krcenov.pdb
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo by krcenov.TrustInfo.xml
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo by krcenov.exe.manifest
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo by krcenov.application
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo by krcenov.exe
-C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo by krcenov.pdb
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo.exe.config
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo.exe.manifest
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo.application
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo.exe
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\bin\x64\Debug\SteamInfo.pdb
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo.TrustInfo.xml
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo.exe.manifest
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo.application
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo.exe
+C:\Users\krcenovs\Documents\Visual Studio 2017\Projects\Export\WindowsFormsApp2\obj\x64\Debug\SteamInfo.pdb

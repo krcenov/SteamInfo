@@ -54,12 +54,13 @@
             this.CountOwnedGamesCID = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.FilterFreeGamesCHB = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(91, 158);
+            this.button1.Location = new System.Drawing.Point(89, 158);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(107, 23);
             this.button1.TabIndex = 1;
@@ -69,7 +70,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(204, 138);
+            this.textBox1.Location = new System.Drawing.Point(201, 134);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(141, 20);
             this.textBox1.TabIndex = 5;
@@ -208,7 +209,7 @@
             // 
             // CalculateCustomSteamIDButton
             // 
-            this.CalculateCustomSteamIDButton.Location = new System.Drawing.Point(91, 187);
+            this.CalculateCustomSteamIDButton.Location = new System.Drawing.Point(89, 187);
             this.CalculateCustomSteamIDButton.Name = "CalculateCustomSteamIDButton";
             this.CalculateCustomSteamIDButton.Size = new System.Drawing.Size(107, 23);
             this.CalculateCustomSteamIDButton.TabIndex = 11;
@@ -220,7 +221,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(93, 141);
+            this.label1.Location = new System.Drawing.Point(91, 137);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(105, 13);
             this.label1.TabIndex = 12;
@@ -231,13 +232,14 @@
             this.OwnedGamesLBox.FormattingEnabled = true;
             this.OwnedGamesLBox.Location = new System.Drawing.Point(4, 25);
             this.OwnedGamesLBox.Name = "OwnedGamesLBox";
-            this.OwnedGamesLBox.Size = new System.Drawing.Size(79, 173);
+            this.OwnedGamesLBox.Size = new System.Drawing.Size(79, 160);
             this.OwnedGamesLBox.TabIndex = 13;
+            this.OwnedGamesLBox.DoubleClick += new System.EventHandler(this.OwnedGamesLBox_DoubleClick);
             // 
             // DifferentSteamIDRB
             // 
             this.DifferentSteamIDRB.AutoSize = true;
-            this.DifferentSteamIDRB.Location = new System.Drawing.Point(220, 187);
+            this.DifferentSteamIDRB.Location = new System.Drawing.Point(202, 187);
             this.DifferentSteamIDRB.Name = "DifferentSteamIDRB";
             this.DifferentSteamIDRB.Size = new System.Drawing.Size(129, 17);
             this.DifferentSteamIDRB.TabIndex = 15;
@@ -259,7 +261,7 @@
             // 
             this.OwnSteamIDRB.AutoSize = true;
             this.OwnSteamIDRB.Checked = true;
-            this.OwnSteamIDRB.Location = new System.Drawing.Point(220, 164);
+            this.OwnSteamIDRB.Location = new System.Drawing.Point(202, 161);
             this.OwnSteamIDRB.Name = "OwnSteamIDRB";
             this.OwnSteamIDRB.Size = new System.Drawing.Size(111, 17);
             this.OwnSteamIDRB.TabIndex = 14;
@@ -270,12 +272,14 @@
             // 
             // OwnedGamesCustomSteamIDLB
             // 
+            this.OwnedGamesCustomSteamIDLB.AllowDrop = true;
             this.OwnedGamesCustomSteamIDLB.FormattingEnabled = true;
             this.OwnedGamesCustomSteamIDLB.Location = new System.Drawing.Point(366, 67);
             this.OwnedGamesCustomSteamIDLB.Name = "OwnedGamesCustomSteamIDLB";
             this.OwnedGamesCustomSteamIDLB.Size = new System.Drawing.Size(129, 134);
             this.OwnedGamesCustomSteamIDLB.TabIndex = 17;
             this.OwnedGamesCustomSteamIDLB.Visible = false;
+            this.OwnedGamesCustomSteamIDLB.DoubleClick += new System.EventHandler(this.OwnedGamesCustomSteamIDLB_DoubleClick);
             // 
             // label3
             // 
@@ -308,11 +312,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(93, 9);
+            this.label8.Location = new System.Drawing.Point(109, 9);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(172, 13);
             this.label8.TabIndex = 21;
-            this.label8.Text = "Created by krcenov on 19.07.2017";
+            this.label8.Text = "Created by krcenov on 20.07.2017";
             // 
             // label9
             // 
@@ -323,11 +327,23 @@
             this.label9.TabIndex = 22;
             this.label9.Text = "You own:";
             // 
+            // FilterFreeGamesCHB
+            // 
+            this.FilterFreeGamesCHB.AutoSize = true;
+            this.FilterFreeGamesCHB.Location = new System.Drawing.Point(4, 191);
+            this.FilterFreeGamesCHB.Name = "FilterFreeGamesCHB";
+            this.FilterFreeGamesCHB.Size = new System.Drawing.Size(84, 17);
+            this.FilterFreeGamesCHB.TabIndex = 23;
+            this.FilterFreeGamesCHB.Text = "Only Bought";
+            this.FilterFreeGamesCHB.UseVisualStyleBackColor = true;
+            this.FilterFreeGamesCHB.CheckedChanged += new System.EventHandler(this.FilterFreeGamesCHB_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(354, 211);
+            this.Controls.Add(this.FilterFreeGamesCHB);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.CountOwnedGamesCID);
@@ -380,6 +396,7 @@
         private System.Windows.Forms.Label CountOwnedGamesCID;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox FilterFreeGamesCHB;
     }
 }
 
