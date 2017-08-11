@@ -55,12 +55,18 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.FilterFreeGamesCHB = new System.Windows.Forms.CheckBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportMyGamesAppidToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDifferentSteamIDGamesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportBothToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(89, 158);
+            this.button1.Location = new System.Drawing.Point(174, 200);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(107, 23);
             this.button1.TabIndex = 1;
@@ -70,7 +76,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(201, 134);
+            this.textBox1.Location = new System.Drawing.Point(157, 174);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(141, 20);
             this.textBox1.TabIndex = 5;
@@ -122,7 +128,7 @@
             this.tableLayoutPanel1.Controls.Add(this.SteamNameBox, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label5, 0, 2);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(89, 25);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(90, 45);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -209,7 +215,7 @@
             // 
             // CalculateCustomSteamIDButton
             // 
-            this.CalculateCustomSteamIDButton.Location = new System.Drawing.Point(89, 187);
+            this.CalculateCustomSteamIDButton.Location = new System.Drawing.Point(372, 234);
             this.CalculateCustomSteamIDButton.Name = "CalculateCustomSteamIDButton";
             this.CalculateCustomSteamIDButton.Size = new System.Drawing.Size(107, 23);
             this.CalculateCustomSteamIDButton.TabIndex = 11;
@@ -221,7 +227,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(91, 137);
+            this.label1.Location = new System.Drawing.Point(176, 158);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(105, 13);
             this.label1.TabIndex = 12;
@@ -230,7 +236,7 @@
             // OwnedGamesLBox
             // 
             this.OwnedGamesLBox.FormattingEnabled = true;
-            this.OwnedGamesLBox.Location = new System.Drawing.Point(4, 25);
+            this.OwnedGamesLBox.Location = new System.Drawing.Point(9, 43);
             this.OwnedGamesLBox.Name = "OwnedGamesLBox";
             this.OwnedGamesLBox.Size = new System.Drawing.Size(79, 160);
             this.OwnedGamesLBox.TabIndex = 13;
@@ -239,7 +245,7 @@
             // DifferentSteamIDRB
             // 
             this.DifferentSteamIDRB.AutoSize = true;
-            this.DifferentSteamIDRB.Location = new System.Drawing.Point(202, 187);
+            this.DifferentSteamIDRB.Location = new System.Drawing.Point(43, 240);
             this.DifferentSteamIDRB.Name = "DifferentSteamIDRB";
             this.DifferentSteamIDRB.Size = new System.Drawing.Size(129, 17);
             this.DifferentSteamIDRB.TabIndex = 15;
@@ -250,7 +256,7 @@
             // 
             // CustomSteamIDBox
             // 
-            this.CustomSteamIDBox.Location = new System.Drawing.Point(366, 41);
+            this.CustomSteamIDBox.Location = new System.Drawing.Point(362, 211);
             this.CustomSteamIDBox.Name = "CustomSteamIDBox";
             this.CustomSteamIDBox.Size = new System.Drawing.Size(129, 20);
             this.CustomSteamIDBox.TabIndex = 16;
@@ -261,7 +267,7 @@
             // 
             this.OwnSteamIDRB.AutoSize = true;
             this.OwnSteamIDRB.Checked = true;
-            this.OwnSteamIDRB.Location = new System.Drawing.Point(202, 161);
+            this.OwnSteamIDRB.Location = new System.Drawing.Point(205, 240);
             this.OwnSteamIDRB.Name = "OwnSteamIDRB";
             this.OwnSteamIDRB.Size = new System.Drawing.Size(111, 17);
             this.OwnSteamIDRB.TabIndex = 14;
@@ -274,9 +280,9 @@
             // 
             this.OwnedGamesCustomSteamIDLB.AllowDrop = true;
             this.OwnedGamesCustomSteamIDLB.FormattingEnabled = true;
-            this.OwnedGamesCustomSteamIDLB.Location = new System.Drawing.Point(366, 67);
+            this.OwnedGamesCustomSteamIDLB.Location = new System.Drawing.Point(362, 47);
             this.OwnedGamesCustomSteamIDLB.Name = "OwnedGamesCustomSteamIDLB";
-            this.OwnedGamesCustomSteamIDLB.Size = new System.Drawing.Size(129, 134);
+            this.OwnedGamesCustomSteamIDLB.Size = new System.Drawing.Size(129, 147);
             this.OwnedGamesCustomSteamIDLB.TabIndex = 17;
             this.OwnedGamesCustomSteamIDLB.Visible = false;
             this.OwnedGamesCustomSteamIDLB.DoubleClick += new System.EventHandler(this.OwnedGamesCustomSteamIDLB_DoubleClick);
@@ -284,7 +290,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(393, 26);
+            this.label3.Location = new System.Drawing.Point(389, 195);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 18;
@@ -294,7 +300,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(363, 9);
+            this.label4.Location = new System.Drawing.Point(385, 27);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(80, 13);
             this.label4.TabIndex = 19;
@@ -304,7 +310,7 @@
             // CountOwnedGamesCID
             // 
             this.CountOwnedGamesCID.AutoSize = true;
-            this.CountOwnedGamesCID.Location = new System.Drawing.Point(449, 9);
+            this.CountOwnedGamesCID.Location = new System.Drawing.Point(465, 27);
             this.CountOwnedGamesCID.Name = "CountOwnedGamesCID";
             this.CountOwnedGamesCID.Size = new System.Drawing.Size(0, 13);
             this.CountOwnedGamesCID.TabIndex = 20;
@@ -312,16 +318,16 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(109, 9);
+            this.label8.Location = new System.Drawing.Point(117, 27);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(172, 13);
             this.label8.TabIndex = 21;
-            this.label8.Text = "Created by krcenov on 21.07.2017";
+            this.label8.Text = "Created by krcenov on 11.08.2017";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 9);
+            this.label9.Location = new System.Drawing.Point(12, 27);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(52, 13);
             this.label9.TabIndex = 22;
@@ -330,7 +336,7 @@
             // FilterFreeGamesCHB
             // 
             this.FilterFreeGamesCHB.AutoSize = true;
-            this.FilterFreeGamesCHB.Location = new System.Drawing.Point(4, 191);
+            this.FilterFreeGamesCHB.Location = new System.Drawing.Point(12, 206);
             this.FilterFreeGamesCHB.Name = "FilterFreeGamesCHB";
             this.FilterFreeGamesCHB.Size = new System.Drawing.Size(84, 17);
             this.FilterFreeGamesCHB.TabIndex = 23;
@@ -338,11 +344,54 @@
             this.FilterFreeGamesCHB.UseVisualStyleBackColor = true;
             this.FilterFreeGamesCHB.CheckedChanged += new System.EventHandler(this.FilterFreeGamesCHB_CheckedChanged);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(354, 24);
+            this.menuStrip1.TabIndex = 26;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportMyGamesAppidToolStripMenuItem,
+            this.exportDifferentSteamIDGamesToolStripMenuItem,
+            this.exportBothToolStripMenuItem});
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.exportToolStripMenuItem.Text = "Export";
+            // 
+            // exportMyGamesAppidToolStripMenuItem
+            // 
+            this.exportMyGamesAppidToolStripMenuItem.Name = "exportMyGamesAppidToolStripMenuItem";
+            this.exportMyGamesAppidToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.exportMyGamesAppidToolStripMenuItem.Text = "Export My Games";
+            this.exportMyGamesAppidToolStripMenuItem.Click += new System.EventHandler(this.exportMyGamesAppidToolStripMenuItem_Click);
+            // 
+            // exportDifferentSteamIDGamesToolStripMenuItem
+            // 
+            this.exportDifferentSteamIDGamesToolStripMenuItem.Name = "exportDifferentSteamIDGamesToolStripMenuItem";
+            this.exportDifferentSteamIDGamesToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.exportDifferentSteamIDGamesToolStripMenuItem.Text = "Export Different SteamID Games";
+            this.exportDifferentSteamIDGamesToolStripMenuItem.Click += new System.EventHandler(this.exportDifferentSteamIDGamesToolStripMenuItem_Click);
+            // 
+            // exportBothToolStripMenuItem
+            // 
+            this.exportBothToolStripMenuItem.Name = "exportBothToolStripMenuItem";
+            this.exportBothToolStripMenuItem.Size = new System.Drawing.Size(260, 22);
+            this.exportBothToolStripMenuItem.Text = "Export Both";
+            this.exportBothToolStripMenuItem.Click += new System.EventHandler(this.exportBothToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(354, 211);
+            this.ClientSize = new System.Drawing.Size(354, 261);
             this.Controls.Add(this.FilterFreeGamesCHB);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -359,12 +408,16 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "krcenov\'s Steam info box";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -397,6 +450,11 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox FilterFreeGamesCHB;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportMyGamesAppidToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportDifferentSteamIDGamesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportBothToolStripMenuItem;
     }
 }
 
