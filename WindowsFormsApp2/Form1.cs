@@ -26,11 +26,6 @@ namespace WindowsFormsApp2
             InitializeComponent();
         }
 
-        static void ExitApp()
-        {
-            Application.Exit();
-        }
-
         public void GetOwnedSteamGames(string SteamID, ListBox Name)
         {
             using (WebClient client = new WebClient())
@@ -71,7 +66,7 @@ namespace WindowsFormsApp2
                 AddtoLBox(gameid, Name);
                 EndofGetOwnedSteamGames:;
             }
-        }              //Getting Steam Owned Games
+        }                  //Getting Steam Owned Games
 
         public int CountOfOwnedGames(string SteamID)
         {
@@ -84,7 +79,7 @@ namespace WindowsFormsApp2
 
             return Count;
 
-        }
+        }                                  //Counting Owned Games
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -111,10 +106,10 @@ namespace WindowsFormsApp2
                 if (YesNoExit == DialogResult.Yes)
                 {
                     file.Close();
-                    ExitApp();
+                    Application.Exit();
                 }
             }
-        }
+        }                  
 
         public void NewFreeGamesList()
         {
@@ -159,7 +154,7 @@ namespace WindowsFormsApp2
                 }
                 File.WriteAllLines("FreeGamesList.txt", gameidstr);
             }
-        }
+        }                                               //Gathering Free Games list
 
         public void CheckOfLastFreeGamesListUpdate()
         {
@@ -185,7 +180,7 @@ namespace WindowsFormsApp2
                 NewFreeGamesList();
 
             }
-        }
+        }                                 //Checking the last time that the free games list has been updated
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -209,11 +204,11 @@ namespace WindowsFormsApp2
             catch (Exception) //look for an error
             {
                 MessageBox.Show("Steam not running!" + "\n" + "Terminating program", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);           //Error messagebox
-                ExitApp();                                                                                                                           //Used to Exit program
+                Application.Exit();                                                                                                                  //Used to Exit program
             }
-        }                      //Initializing everything
+        }                          //Initializing everything
 
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)           //Make shure that textbox1 has only numbers
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)              //Make shure that textbox1 has only numbers
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
@@ -221,7 +216,7 @@ namespace WindowsFormsApp2
             }
         } //Make shure that only numbers go inside APPID Textbox
 
-        private void button2_Click(object sender, EventArgs e)               //Get owned games custom id 
+        private void button2_Click(object sender, EventArgs e)                          //Get owned games custom id 
         {
             if (OwnedGamesCustomSteamIDLB.Items.Count != 0)
             {
@@ -254,14 +249,15 @@ namespace WindowsFormsApp2
             {
                 ListOwnedGamesName.Items.Add(o);
             }
-        }      //Adding items to listbox
+        }         //Adding items to listbox
+
         private void CustomSteamIDBox_Keypress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
             }
-        }  //making shure that CustomSteamIDBox has only numbers
+        }   //making shure that CustomSteamIDBox has only numbers
 
         private void DifferentSteamIDRB_CheckedChanged(object sender, EventArgs e)
         {
@@ -272,7 +268,7 @@ namespace WindowsFormsApp2
             CountOwnedGamesCID.Visible = true;
             OwnedGamesCustomSteamIDLB.Visible = true;
             this.Size = new Size(517, 300);
-        }     //RB For Different SteamID Check
+        }   //RB For Different SteamID Check
 
         private void OwnSteamIDRB_CheckedChanged(object sender, EventArgs e)
         {
@@ -283,7 +279,7 @@ namespace WindowsFormsApp2
             CountOwnedGamesCID.Visible = false;
             OwnedGamesCustomSteamIDLB.Visible = false;
             this.Size = new Size(370, 300);
-        }           //RB For Own SteamID Check
+        }         //RB For Own SteamID Check
 
         public static List<string> GetOwnedSteamGames(string KEY, string SteamID)
         {
@@ -427,6 +423,23 @@ namespace WindowsFormsApp2
             MessageBox.Show("Copied " + OwnedGamesLBox.SelectedItem.ToString() + " to clipboard!", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
+        public void Exporter(ListBox ListBox,string TxtName)                              //Exporting Function
+        {
+            string[] SteamGames = System.IO.File.ReadAllLines("Steamnames.txt");
+            List<string> lines = new List<string>();
+            for (int i = 0; i < ListBox.Items.Count; i++)
+            {
+                var match = SteamGames.FirstOrDefault(stringToCheck => stringToCheck.Contains(ListBox.Items[i].ToString()));
+                if (match != null)
+                {
+                    var index = Array.FindIndex(SteamGames, row => row.Contains(match));
+                    lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
+                }
+
+            }
+            System.IO.File.WriteAllLines(TxtName, lines);
+        }
+
         private void exportMyGamesAppidToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (File.Exists("My Steam Games.txt"))
@@ -438,36 +451,13 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    string[] SteamnamesandAppID = System.IO.File.ReadAllLines("Steamnames.txt");
-                    List<string> lines = new List<string>();
-                    for (int i = 0; i < OwnedGamesLBox.Items.Count; i++)
-                    {
-                        var match = SteamnamesandAppID.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesLBox.Items[i].ToString()));
-                        if (match != null)
-                        {
-                            var index = Array.FindIndex(SteamnamesandAppID, row => row.Contains(match));
-                            lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                        }
-
-                    }
-                    System.IO.File.WriteAllLines("My Steam Games.txt", lines);
+                    Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
                     MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                string[] SteamnamesandAppID = System.IO.File.ReadAllLines("Steamnames.txt");
-                List<string> lines = new List<string>();
-                for (int i = 0; i < OwnedGamesLBox.Items.Count; i++)
-                {
-                    var match = SteamnamesandAppID.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesLBox.Items[i].ToString()));
-                    if (match != null)
-                    {
-                        var index = Array.FindIndex(SteamnamesandAppID, row => row.Contains(match));
-                        lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                    }
-                }
-                System.IO.File.WriteAllLines("My Steam Games.txt", lines);
+                Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
                 MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -499,18 +489,7 @@ namespace WindowsFormsApp2
                     }
                     else
                     {
-                        string[] SteamnamesandAppIDDifferentUser = System.IO.File.ReadAllLines("Steamnames.txt");
-                        List<string> lines = new List<string>();
-                        for (int i = 0; i < OwnedGamesCustomSteamIDLB.Items.Count; i++)
-                        {
-                            var match = SteamnamesandAppIDDifferentUser.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesCustomSteamIDLB.Items[i].ToString()));
-                            if (match != null)
-                            {
-                                var index = Array.FindIndex(SteamnamesandAppIDDifferentUser, row => row.Contains(match));
-                                lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                            }
-                        }
-                        System.IO.File.WriteAllLines("Custom SteamID Games.txt", lines);
+                        Exporter(OwnedGamesCustomSteamIDLB, "Custom SteamID Games.txt");
                         MessageBox.Show("CustomID Owned Games AppID's and names have been saved to the current directory in a file called Custom SteamID Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -533,18 +512,7 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    string[] SteamnamesandAppIDDifferentUser = System.IO.File.ReadAllLines("Steamnames.txt");
-                    List<string> lines = new List<string>();
-                    for (int i = 0; i < OwnedGamesCustomSteamIDLB.Items.Count; i++)
-                    {
-                        var match = SteamnamesandAppIDDifferentUser.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesCustomSteamIDLB.Items[i].ToString()));
-                        if (match != null)
-                        {
-                            var index = Array.FindIndex(SteamnamesandAppIDDifferentUser, row => row.Contains(match));
-                            lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                        }
-                    }
-                    System.IO.File.WriteAllLines("Custom SteamID Games.txt", lines);
+                    Exporter(OwnedGamesCustomSteamIDLB, "Custom SteamID Games.txt");
                     MessageBox.Show("CustomID Owned Games AppID's and names have been saved to the current directory in a file called Custom SteamID Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
@@ -562,38 +530,16 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    string[] SteamnamesandAppID = System.IO.File.ReadAllLines("Steamnames.txt");
-                    List<string> lines = new List<string>();
-                    for (int i = 0; i < OwnedGamesLBox.Items.Count; i++)
-                    {
-                        var match = SteamnamesandAppID.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesLBox.Items[i].ToString()));
-                        if (match != null)
-                        {
-                            var index = Array.FindIndex(SteamnamesandAppID, row => row.Contains(match));
-                            lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                        }
-
-                    }
-                    System.IO.File.WriteAllLines("My Steam Games.txt", lines);
+                    Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
                     MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                string[] SteamnamesandAppID = System.IO.File.ReadAllLines("Steamnames.txt");
-                List<string> lines = new List<string>();
-                for (int i = 0; i < OwnedGamesLBox.Items.Count; i++)
-                {
-                    var match = SteamnamesandAppID.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesLBox.Items[i].ToString()));
-                    if (match != null)
-                    {
-                        var index = Array.FindIndex(SteamnamesandAppID, row => row.Contains(match));
-                        lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                    }
-                }
-                System.IO.File.WriteAllLines("My Steam Games.txt", lines);
+                Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
                 MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
             if (File.Exists("Custom SteamID Games.txt"))
             {
                 var Answer = MessageBox.Show("You have exported the games of a user recently, would you like to override?", "Conflict", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -619,18 +565,7 @@ namespace WindowsFormsApp2
                     }
                     else
                     {
-                        string[] SteamnamesandAppIDDifferentUser = System.IO.File.ReadAllLines("Steamnames.txt");
-                        List<string> lines = new List<string>();
-                        for (int i = 0; i < OwnedGamesCustomSteamIDLB.Items.Count; i++)
-                        {
-                            var match = SteamnamesandAppIDDifferentUser.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesCustomSteamIDLB.Items[i].ToString()));
-                            if (match != null)
-                            {
-                                var index = Array.FindIndex(SteamnamesandAppIDDifferentUser, row => row.Contains(match));
-                                lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                            }
-                        }
-                        System.IO.File.WriteAllLines("Custom SteamID Games.txt", lines);
+                        Exporter(OwnedGamesCustomSteamIDLB, "Custom SteamID Games.txt");
                         MessageBox.Show("CustomID Owned Games AppID's and names have been saved to the current directory in a file called Custom SteamID Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -653,22 +588,16 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    string[] SteamnamesandAppIDDifferentUser = System.IO.File.ReadAllLines("Steamnames.txt");
-                    List<string> lines = new List<string>();
-                    for (int i = 0; i < OwnedGamesCustomSteamIDLB.Items.Count; i++)
-                    {
-                        var match = SteamnamesandAppIDDifferentUser.FirstOrDefault(stringToCheck => stringToCheck.Contains(OwnedGamesCustomSteamIDLB.Items[i].ToString()));
-                        if (match != null)
-                        {
-                            var index = Array.FindIndex(SteamnamesandAppIDDifferentUser, row => row.Contains(match));
-                            lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
-                        }
-                    }
-                    System.IO.File.WriteAllLines("Custom SteamID Games.txt", lines);
+                    Exporter(OwnedGamesCustomSteamIDLB, "Custom SteamID Games.txt");
                     MessageBox.Show("CustomID Owned Games AppID's and names have been saved to the current directory in a file called Custom SteamID Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
             }
+
+        }
+
+        private void OwnedGamesLBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
     }

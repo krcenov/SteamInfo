@@ -240,6 +240,7 @@
             this.OwnedGamesLBox.Name = "OwnedGamesLBox";
             this.OwnedGamesLBox.Size = new System.Drawing.Size(79, 160);
             this.OwnedGamesLBox.TabIndex = 13;
+            this.OwnedGamesLBox.SelectedIndexChanged += new System.EventHandler(this.OwnedGamesLBox_SelectedIndexChanged);
             this.OwnedGamesLBox.DoubleClick += new System.EventHandler(this.OwnedGamesLBox_DoubleClick);
             // 
             // DifferentSteamIDRB
