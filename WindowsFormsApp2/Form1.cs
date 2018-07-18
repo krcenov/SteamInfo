@@ -15,7 +15,9 @@ namespace WindowsFormsApp2
 {
     public partial class MainForm : Form
     {
+        List<string> FreeGamesList = new List<string>();
         public string steamid = "";
+
         public int Gamecount;
         public string Raw;
         public string Processed1;
@@ -41,7 +43,7 @@ namespace WindowsFormsApp2
                 }
                 try
                 {
-                    Gamecount = Regex.Matches(Regex.Escape(Raw), "appid").Count;
+                    Gamecount = Int32.Parse(Regex.Match(Raw, "game_count\":(.+?),").Groups[1].Value);
                 }
                 catch (Exception)
                 {
@@ -52,10 +54,10 @@ namespace WindowsFormsApp2
                 List<int> gameid = new List<int>();
                 for (int i = 0; i < Gamecount; i++)
                 {
-                    Regex regex = new Regex("d\": (.*?),");
+                    Regex regex = new Regex("d\":(.*?),");
                     var v = regex.Match(Raw);
                     string s = v.Groups[1].ToString();
-                    Raw = Regex.Replace(Raw, "d\": " + s + ",", "");
+                    Raw = Regex.Replace(Raw, "d\":" + s + ",", "");
                     //s.Substring(4, s.Length - 4);
                     if (s != "")
                     {
@@ -111,9 +113,9 @@ namespace WindowsFormsApp2
             }
         }                  
 
-        public void NewFreeGamesList()
+        public void FreeGamesListFnc()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://steamdb.info/tags/?tagid=113");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://steamspy.com/genre/Free+to+Play");
             request.UserAgent = "wowoww";
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             if (response.StatusCode == HttpStatusCode.OK)
@@ -133,75 +135,100 @@ namespace WindowsFormsApp2
                 string RawSteamdbinfodatahtmlcode = readStream.ReadToEnd();
                 response.Close();
                 readStream.Close();
-                int count = Regex.Matches(Regex.Escape(RawSteamdbinfodatahtmlcode), "/app/").Count;
+                int count = Regex.Matches(Regex.Escape(RawSteamdbinfodatahtmlcode), "href=/app/").Count;
                 List<int> gameid = new List<int>();
                 for (int i = 0; i < count; i++)
                 {
-                    Regex regex = new Regex("data-appid=\"(.*?)\">");
+                    Regex regex = new Regex("href=/app/(.*?)><img src=");
                     var v = regex.Match(RawSteamdbinfodatahtmlcode);
                     string s = v.Groups[1].ToString();
-                    RawSteamdbinfodatahtmlcode = Regex.Replace(RawSteamdbinfodatahtmlcode, "data-appid=\"" + s + "\">", "");
+                    RawSteamdbinfodatahtmlcode = Regex.Replace(RawSteamdbinfodatahtmlcode, "href=/app/" + s + "><img src=", "");
                     if (s != "")
                     {
                         gameid.Add(int.Parse(s));
                     }
                 }
                 gameid.Sort();
-                List<string> gameidstr = new List<string>();
                 for (int i = 0; i < gameid.Count; i++)
                 {
-                    gameidstr.Add(gameid[i].ToString());
+                    FreeGamesList.Add(gameid[i].ToString());
                 }
-                File.WriteAllLines("FreeGamesList.txt", gameidstr);
             }
         }                                               //Gathering Free Games list
 
-        public void CheckOfLastFreeGamesListUpdate()
-        {
-            if (File.Exists("DateOfLastFreeGamesList.txt"))
-            {
-                string DATE = File.ReadLines("DateOfLastFreeGamesList.txt").First();
-                DateTime ThisDay = DateTime.Today;
 
-                if (ThisDay.ToString("d") != DATE)
+        
+        public void Steamnamesuptodatecheck()
+        {
+            int AllGamesCount;
+            using (WebClient client = new WebClient())
+            {
+                string Steamnamesfilename = "Steamnames.txt";
+                client.Encoding = Encoding.UTF8;
+                try
                 {
-                    string DAY = ThisDay.ToString("d");
-                    string[] DAYs = { DAY };
-                    File.WriteAllLines("DateOfLastFreeGamesList.txt", DAYs);
-                    NewFreeGamesList();
+                    Raw = client.DownloadString("http://api.steampowered.com/ISteamApps/GetAppList/v2");
+                }
+                catch
+                {
+                    MessageBox.Show("Could not connect to update server!" + "\n" + "Can not check for updates.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);           //No connection to steam web api error
+                }
+                AllGamesCount = Regex.Matches(Raw, "\"appid\":").Count;
+                int lineCount = File.ReadLines(Steamnamesfilename).Count();
+                if (lineCount/2 == AllGamesCount)
+                {
+
+                }
+                else
+                {
+                    var Answer = MessageBox.Show("You need to update!" + "\n" + "Update now?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (Answer == DialogResult.Yes)
+                    {
+                        
+                        string FilteredRAW = "";
+                        FilteredRAW = Raw;
+                        FilteredRAW = FilteredRAW.Replace("{\"applist\":{\"apps\":[", "");
+                        FilteredRAW = FilteredRAW.Replace("{\"appid\":", "\n");
+                        FilteredRAW = FilteredRAW.Replace(",\"name\":\"","\n");
+                        FilteredRAW = FilteredRAW.Replace("\"},", "");
+                        if (File.Exists(Directory.GetCurrentDirectory() + "/" + Steamnamesfilename) == true)
+                        {
+                            File.Delete(Steamnamesfilename);
+                            File.Create(Steamnamesfilename).Close();
+                        }
+                        else
+                        {
+                            File.Create(Steamnamesfilename).Close();
+                        }
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "/" + Steamnamesfilename, FilteredRAW);    //Pushing all the text to a txt file
+                        var lines = File.ReadAllLines(Steamnamesfilename);                                              //Reading all the lines of the text file
+                        File.WriteAllLines(Steamnamesfilename, lines.Skip(1).ToArray());                                //Writing the same lines without the first one
+                    }
                 }
             }
-            else
-            {
-                DateTime ThisDay = DateTime.Today;
-                string DAY = ThisDay.ToString("d");
-                string[] DAYs = { DAY };
-                File.WriteAllLines("DateOfLastFreeGamesList.txt", DAYs);
-                NewFreeGamesList();
-
-            }
-        }                                 //Checking the last time that the free games list has been updated
-
+        }                                        //Checking the last time that the games list with names has been updated and pushing an update if needed
         private void Form1_Load(object sender, EventArgs e)
         {
             try
             {
-                //Start of Initialization shit
-                SteamAPI.Init();  //Must initialise SteamApi before using steamwork functions
-                steamid = SteamUser.GetSteamID().ToString();
-                string name = SteamFriends.GetPersonaName();
-                string steamlevel = SteamUser.GetPlayerSteamLevel().ToString();
-                int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
-                SteamFriendCountBox.Text = friendCount.ToString();
-                SteamNameBox.Text = name;
-                SteamLevelBox.Text = steamlevel;
-                SteamIDBox.Text = steamid;
-                CheckOfLastFreeGamesListUpdate();
-                GetOwnedSteamGames(steamid, OwnedGamesLBox);
-                OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
+            //Start of Initialization shit
+            SteamAPI.Init();   //Must initialise SteamApi before using steamwork functions
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            FreeGamesListFnc();
+            Steamnamesuptodatecheck();
+            steamid = SteamUser.GetSteamID().ToString();
+            string name = SteamFriends.GetPersonaName();
+            string steamlevel = SteamUser.GetPlayerSteamLevel().ToString();
+            int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
+            SteamFriendCountBox.Text = friendCount.ToString();
+            SteamNameBox.Text = name;
+            SteamLevelBox.Text = steamlevel;
+            SteamIDBox.Text = steamid;
+            GetOwnedSteamGames(steamid, OwnedGamesLBox);
+            OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
                 //End of initialization shit
-            }
-            catch (Exception) //look for an error
+            } 
+            catch (Exception) 
             {
                 MessageBox.Show("Steam not running!" + "\n" + "Terminating program", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);           //Error messagebox
                 Application.Exit();                                                                                                                  //Used to Exit program
@@ -231,12 +258,14 @@ namespace WindowsFormsApp2
                 if (FilterFreeGamesCHB.Checked)
                 {
                     OwnedSteamGamesFilteredNoFreeGames(OwnedGamesCustomSteamIDLB, CustomSteamIDBox.Text);
+                    OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
                     CountOwnedGamesCID.Text = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
 
                 }
                 else
                 {
                     GetOwnedSteamGames(CustomSteamIDBox.Text, OwnedGamesCustomSteamIDLB);
+                    OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
                     CountOwnedGamesCID.Text = CountOfOwnedGames(CustomSteamIDBox.Text).ToString();
                 }
             }
@@ -293,13 +322,13 @@ namespace WindowsFormsApp2
                 try
                 {
                     Raw = client.DownloadString("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + KEY + "&steamid=" + SteamID + "&format=json");
-                    Gamecount = Regex.Matches(Regex.Escape(Raw), "appid").Count;
+                    Gamecount = Int32.Parse(Regex.Match(Raw, "game_count\":(.+?),").Groups[1].Value);
                     for (int i = 0; i < Gamecount; i++)
                     {
-                        Regex regex = new Regex("d\": (.*?),");
+                        Regex regex = new Regex("d\":(.*?),");
                         var v = regex.Match(Raw);
                         string s = v.Groups[1].ToString();
-                        Raw = Regex.Replace(Raw, "d\": " + s + ",", "");
+                        Raw = Regex.Replace(Raw, "d\":" + s + ",", "");
 
                         if (s != "")
                         {
@@ -318,11 +347,7 @@ namespace WindowsFormsApp2
 
         public void OwnedSteamGamesFilteredNoFreeGames(ListBox name, string STEAMID)
         {
-            string pathtofreegameslist = "FreeGamesList.txt";
-            if (File.Exists(pathtofreegameslist))
-            {
                 List<int> FAKE = new List<int>();
-                string[] FreeGamesList = File.ReadAllLines(pathtofreegameslist);
                 List<string> CopyFreeGamesList = new List<string>(FreeGamesList);
 
                 List<string> CopyOwnedSGames = new List<string>(GetOwnedSteamGames(KEY, STEAMID));
@@ -353,47 +378,29 @@ namespace WindowsFormsApp2
                         name.Items.Add(FAKE[i]);
                     }
                 }
-            }
+            
         }
 
         private void FilterFreeGamesCHB_CheckedChanged(object sender, EventArgs e)
         {
-            Start:
             if (FilterFreeGamesCHB.Checked)
             {
                 if (OwnedGamesCustomSteamIDLB.Items.Count != 0)
                 {
-                    if (File.Exists("FreeGamesList.txt"))
-                    {
                         FilterFreeGamesCHB.Enabled = false;
                         OwnedSteamGamesFilteredNoFreeGames(OwnedGamesCustomSteamIDLB, CustomSteamIDBox.Text);
                         OwnedSteamGamesFilteredNoFreeGames(OwnedGamesLBox, steamid);
                         CountOwnedGamesCID.Text = OwnedGamesCustomSteamIDLB.Items.Count.ToString();
                         FilterFreeGamesCHB.Enabled = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("FreeGamesList.txt is missing! \nClick OK to fetch it!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        NewFreeGamesList();
-                        goto Start;
-                    }
                 }
                 else
                 {
-                    if (File.Exists("FreeGamesList.txt"))
-                    {
                         FilterFreeGamesCHB.Enabled = false;
                         OwnedSteamGamesFilteredNoFreeGames(OwnedGamesLBox, steamid);
                         OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString(); // For updating the GameCount in owned games
                         FilterFreeGamesCHB.Enabled = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("FreeGamesList.txt is missing! \nClick OK to fetch it!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        NewFreeGamesList();
-                        goto Start;
-                    }
                 }
+                OwnedGamesBox.Text = OwnedGamesLBox.Items.Count.ToString();
             }
             else
             {
@@ -425,19 +432,38 @@ namespace WindowsFormsApp2
 
         public void Exporter(ListBox ListBox,string TxtName)                              //Exporting Function
         {
+            int Problemgames = 0;
+            bool Problem = false;
+            int i;
             string[] SteamGames = System.IO.File.ReadAllLines("Steamnames.txt");
             List<string> lines = new List<string>();
-            for (int i = 0; i < ListBox.Items.Count; i++)
+            for (i = 0; i < ListBox.Items.Count; i++)
             {
                 var match = SteamGames.FirstOrDefault(stringToCheck => stringToCheck.Contains(ListBox.Items[i].ToString()));
-                if (match != null)
+                if (match == ListBox.Items[i].ToString())
                 {
-                    var index = Array.FindIndex(SteamGames, row => row.Contains(match));
-                    lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
+                    if (match != null)
+                    {
+                        var index = Array.FindIndex(SteamGames, row => row.Contains(match));
+                        lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
+                    }
                 }
-
+                else
+                {
+                    if (match != null)
+                    {
+                        var index = Array.FindIndex(SteamGames, row => row.Contains(match));
+                        lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
+                    }
+                    Problem = true;
+                    Problemgames++;
+                }
             }
             System.IO.File.WriteAllLines(TxtName, lines);
+            if (Problem == true)
+            {
+                MessageBox.Show(Problemgames + " games have not been exported or have been incorrectly exported, please ask the developer to update the game list!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void exportMyGamesAppidToolStripMenuItem_Click(object sender, EventArgs e)
@@ -451,13 +477,13 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
+                    Exporter(OwnedGamesLBox, "My Steam Games.txt");
                     MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
+                Exporter(OwnedGamesLBox, "My Steam Games.txt");
                 MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -530,13 +556,13 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
+                    Exporter(OwnedGamesLBox, "My Steam Games.txt");
                     MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
             {
-                Exporter(OwnedGamesLBox, "My Owned Steam Games.txt");
+                Exporter(OwnedGamesLBox, "My Steam Games.txt");
                 MessageBox.Show("Your Owned Games AppID's and names have been saved to the current directory in a file called My Steam Games.txt", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
@@ -593,11 +619,6 @@ namespace WindowsFormsApp2
                 }
 
             }
-
-        }
-
-        private void OwnedGamesLBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
         }
     }

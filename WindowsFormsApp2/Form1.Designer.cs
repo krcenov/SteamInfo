@@ -240,7 +240,6 @@
             this.OwnedGamesLBox.Name = "OwnedGamesLBox";
             this.OwnedGamesLBox.Size = new System.Drawing.Size(79, 160);
             this.OwnedGamesLBox.TabIndex = 13;
-            this.OwnedGamesLBox.SelectedIndexChanged += new System.EventHandler(this.OwnedGamesLBox_SelectedIndexChanged);
             this.OwnedGamesLBox.DoubleClick += new System.EventHandler(this.OwnedGamesLBox_DoubleClick);
             // 
             // DifferentSteamIDRB
@@ -323,7 +322,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(172, 13);
             this.label8.TabIndex = 21;
-            this.label8.Text = "Created by krcenov on 11.08.2017";
+            this.label8.Text = "Created by krcenov on 13.04.2018";
             // 
             // label9
             // 
