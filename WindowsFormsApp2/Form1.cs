@@ -9,15 +9,16 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.IO;
+using System.Web;
 using System.Text;
 
 namespace WindowsFormsApp2
 {
     public partial class MainForm : Form
     {
+        bool firststart = false;
         List<string> FreeGamesList = new List<string>();
         public string steamid = "";
-
         public int Gamecount;
         public string Raw;
         public string Processed1;
@@ -181,15 +182,13 @@ namespace WindowsFormsApp2
                 }
                 else
                 {
-                    var Answer = MessageBox.Show("You need to update!" + "\n" + "Update now?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                    if (Answer == DialogResult.Yes)
+                    if (firststart = true)
                     {
-                        
                         string FilteredRAW = "";
                         FilteredRAW = Raw;
                         FilteredRAW = FilteredRAW.Replace("{\"applist\":{\"apps\":[", "");
                         FilteredRAW = FilteredRAW.Replace("{\"appid\":", "\n");
-                        FilteredRAW = FilteredRAW.Replace(",\"name\":\"","\n");
+                        FilteredRAW = FilteredRAW.Replace(",\"name\":\"", "\n");
                         FilteredRAW = FilteredRAW.Replace("\"},", "");
                         if (File.Exists(Directory.GetCurrentDirectory() + "/" + Steamnamesfilename) == true)
                         {
@@ -204,6 +203,32 @@ namespace WindowsFormsApp2
                         var lines = File.ReadAllLines(Steamnamesfilename);                                              //Reading all the lines of the text file
                         File.WriteAllLines(Steamnamesfilename, lines.Skip(1).ToArray());                                //Writing the same lines without the first one
                     }
+                    else
+                    {
+                        var Answer = MessageBox.Show("You need to update!" + "\n" + "Update now?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (Answer == DialogResult.Yes)
+                        {
+
+                            string FilteredRAW = "";
+                            FilteredRAW = Raw;
+                            FilteredRAW = FilteredRAW.Replace("{\"applist\":{\"apps\":[", "");
+                            FilteredRAW = FilteredRAW.Replace("{\"appid\":", "\n");
+                            FilteredRAW = FilteredRAW.Replace(",\"name\":\"", "\n");
+                            FilteredRAW = FilteredRAW.Replace("\"},", "");
+                            if (File.Exists(Directory.GetCurrentDirectory() + "/" + Steamnamesfilename) == true)
+                            {
+                                File.Delete(Steamnamesfilename);
+                                File.Create(Steamnamesfilename).Close();
+                            }
+                            else
+                            {
+                                File.Create(Steamnamesfilename).Close();
+                            }
+                            File.AppendAllText(Directory.GetCurrentDirectory() + "/" + Steamnamesfilename, FilteredRAW);    //Pushing all the text to a txt file
+                            var lines = File.ReadAllLines(Steamnamesfilename);                                              //Reading all the lines of the text file
+                            File.WriteAllLines(Steamnamesfilename, lines.Skip(1).ToArray());                                //Writing the same lines without the first one
+                        }
+                    }
                 }
             }
         }                                        //Checking the last time that the games list with names has been updated and pushing an update if needed
@@ -211,8 +236,21 @@ namespace WindowsFormsApp2
         {
             try
             {
-            //Start of Initialization shit
-            SteamAPI.Init();   //Must initialise SteamApi before using steamwork functions
+                //Start of Initialization shit
+                if (!File.Exists(Directory.GetCurrentDirectory() + "/Steamnames.txt"))
+                {
+
+                    File.Create(Directory.GetCurrentDirectory() + "/Steamnames.txt").Close();
+
+                }
+                if (!File.Exists(Directory.GetCurrentDirectory() + "/steam_appid.txt"))
+                {
+
+                    File.Create(Directory.GetCurrentDirectory() + "/steam_appid.txt").Close();
+                    File.AppendAllText(Directory.GetCurrentDirectory() + "/" + "/steam_appid.txt", "480");
+
+                }
+                SteamAPI.Init();   //Must initialise SteamApi before using steamwork functions
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             FreeGamesListFnc();
             Steamnamesuptodatecheck();
@@ -230,7 +268,7 @@ namespace WindowsFormsApp2
             } 
             catch (Exception) 
             {
-                MessageBox.Show("Steam not running!" + "\n" + "Terminating program", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);           //Error messagebox
+                MessageBox.Show("Failed to initialize!" + "\n" + "Terminating program", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);           //Error messagebox
                 Application.Exit();                                                                                                                  //Used to Exit program
             }
         }                          //Initializing everything
@@ -432,6 +470,8 @@ namespace WindowsFormsApp2
 
         public void Exporter(ListBox ListBox,string TxtName)                              //Exporting Function
         {
+            bool matchmatches = false;
+            string ProblemGamesid = "";
             int Problemgames = 0;
             bool Problem = false;
             int i;
@@ -439,12 +479,18 @@ namespace WindowsFormsApp2
             List<string> lines = new List<string>();
             for (i = 0; i < ListBox.Items.Count; i++)
             {
-                var match = SteamGames.FirstOrDefault(stringToCheck => stringToCheck.Contains(ListBox.Items[i].ToString()));
+                string match = null;
+                //var match = SteamGames.FirstOrDefault(stringToCheck => stringToCheck.Contains(ListBox.Items[i].ToString()));
+                bool contains = SteamGames.Contains(ListBox.Items[i].ToString());
+                if (contains == true)
+                {
+                    match = ListBox.Items[i].ToString();
+                }
                 if (match == ListBox.Items[i].ToString())
                 {
                     if (match != null)
                     {
-                        var index = Array.FindIndex(SteamGames, row => row.Contains(match));
+                        var index = Array.FindIndex(SteamGames, row => row == match);
                         lines.Add(match + " " + File.ReadLines("Steamnames.txt").ElementAtOrDefault(index + 1));
                     }
                 }
@@ -457,12 +503,13 @@ namespace WindowsFormsApp2
                     }
                     Problem = true;
                     Problemgames++;
+                    ProblemGamesid = match + " | " + ProblemGamesid;
                 }
             }
             System.IO.File.WriteAllLines(TxtName, lines);
             if (Problem == true)
             {
-                MessageBox.Show(Problemgames + " games have not been exported or have been incorrectly exported, please ask the developer to update the game list!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Problemgames + " games have not been exported or have been incorrectly exported! GAMEID=" + ProblemGamesid + "SEND THIS TO THE DEVELOPER AT krcenov@abv.bg", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
